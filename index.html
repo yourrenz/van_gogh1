@@ -3,42 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Van Gogh AR - Hata Ayıklama</title>
+    <title>Van Gogh AR - Test Aşaması</title>
     
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
         body { margin: 0; overflow: hidden; background-color: #222; }
-        
-        /* Ekrandaki Hata/Bilgi Kutusu */
         #debug-log {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 30%;
-            background-color: rgba(0, 0, 0, 0.9);
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 14px;
-            padding: 10px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            z-index: 9999;
+            bottom: 0; left: 0; width: 100%; height: 30%;
+            background-color: rgba(0, 0, 0, 0.9); color: #00ff00;
+            font-family: monospace; font-size: 14px; padding: 10px;
+            box-sizing: border-box; overflow-y: auto; z-index: 9999;
         }
     </style>
 </head>
 <body>
     
     <div id="debug-log">
-        [SİSTEM] Hata ayıklama başlatıldı...<br>
+        [SİSTEM] Dışarıdan video çekme testi başlatıldı...<br>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-assets>
-            <video id="vid" src="./van_gogh.mp4" webkit-playsinline playsinline loop muted></video>
+            <video id="vid" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" crossorigin="anonymous" webkit-playsinline playsinline loop muted></video>
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -52,47 +42,27 @@
         const logBox = document.getElementById('debug-log');
         const video = document.getElementById('vid');
         const hedef = document.getElementById('hedef');
-        const scene = document.querySelector('a-scene');
 
-        // Log yazdırma fonksiyonu
         function logMesaji(mesaj, renk = "#00ff00") {
             logBox.innerHTML += `<span style="color:${renk};">${mesaj}</span><br>`;
-            logBox.scrollTop = logBox.scrollHeight; // Otomatik aşağı kaydır
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            logMesaji("[SİSTEM] Sayfa yüklendi, AR motoru bekleniyor...");
+            logMesaji("[SİSTEM] İnternet videosu bekleniyor...");
 
-            // Kamera izinleri ve AR motoru hataları
-            scene.addEventListener('arReady', () => {
-                logMesaji("[AR MOTORU] Kamera açıldı ve sistem hazır!", "#00ffff");
-            });
-
-            scene.addEventListener('arError', (ev) => {
-                logMesaji("[HATA] AR Motoru başlatılamadı. Kamera izni verilmemiş veya HTTPS yok.", "red");
-            });
-
-            // Hedef resim bulunduğunda
             hedef.addEventListener("targetFound", () => {
                 logMesaji("[KAMERA] Yıldızlı Gece tablosu TANINDI!", "#ffff00");
-                logMesaji("[VİDEO] Oynatılmaya çalışılıyor...");
-                
                 video.play().then(() => {
-                    logMesaji("[BAŞARI] Video şu an oynatılıyor.", "#00ffff");
+                    logMesaji("[BAŞARI] İnternet videosu başarıyla oynatılıyor!", "#00ffff");
                 }).catch((error) => {
-                    logMesaji(`[HATA] Video oynatılamadı: ${error.message}`, "red");
+                    logMesaji(`[HATA] Video başlatılamadı: ${error.message}`, "red");
                 });
             });
 
-            // Hedef resim kaybedildiğinde
             hedef.addEventListener("targetLost", () => {
-                logMesaji("[KAMERA] Tablo görüş açısından çıktı, video durduruluyor.", "orange");
+                logMesaji("[KAMERA] Tablo kaybedildi, video durdu.", "orange");
                 video.pause();
-            });
-
-            // Video dosyasında sorun varsa
-            video.addEventListener('error', (e) => {
-                logMesaji("[HATA] van_gogh.mp4 dosyası BULUNAMADI veya bozuk!", "red");
             });
         });
     </script>
