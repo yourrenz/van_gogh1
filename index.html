@@ -11,7 +11,6 @@
     <style>
         body { margin: 0; overflow: hidden; }
         
-        /* Ortadaki Bilgi Yazısı */
         #ui-layer {
             position: absolute;
             top: 20px;
@@ -24,105 +23,36 @@
             pointer-events: none;
         }
 
-        /* Sağ Üstteki Versiyon Kutusu */
-        #version-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1001; 
-            font-family: Arial, sans-serif;
-        }
-
-        #version-btn {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 5px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        #version-panel {
-            display: none;
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #333;
-            margin-top: 8px;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            width: 220px;
-            font-size: 12px;
-            text-align: left;
-        }
-
-        #version-panel h4 { margin: 0 0 8px 0; font-size: 14px; color: #000; border-bottom: 1px solid #ccc; padding-bottom: 4px;}
+        #version-container { position: absolute; top: 15px; right: 15px; z-index: 1001; font-family: Arial, sans-serif; }
+        #version-btn { background-color: rgba(0, 0, 0, 0.7); color: #fff; border: 1px solid rgba(255, 255, 255, 0.5); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        #version-panel { display: none; background-color: rgba(255, 255, 255, 0.95); color: #333; margin-top: 8px; padding: 12px; border-radius: 8px; width: 220px; font-size: 12px; }
+        #version-panel h4 { margin: 0 0 8px 0; border-bottom: 1px solid #ccc; padding-bottom: 4px;}
         #version-panel ul { margin: 0; padding-left: 15px; }
-        #version-panel li { margin-bottom: 6px; }
-
-        /* Tarama (Scanner) Animasyonu CSS'i */
-        #scanner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
-            z-index: 900;
-            pointer-events: none; /* Tıklamayı engellememesi için */
-        }
-
-        /* Tarayıcı köşelerindeki çerçeveler */
-        .corner {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-color: rgba(255, 255, 255, 0.8);
-            border-style: solid;
-        }
+        
+        #scanner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; z-index: 900; pointer-events: none; }
+        .corner { position: absolute; width: 40px; height: 40px; border-color: rgba(255, 255, 255, 0.8); border-style: solid; }
         .top-left { top: 0; left: 0; border-width: 4px 0 0 4px; }
         .top-right { top: 0; right: 0; border-width: 4px 4px 0 0; }
         .bottom-left { bottom: 0; left: 0; border-width: 0 0 4px 4px; }
         .bottom-right { bottom: 0; right: 0; border-width: 0 4px 4px 0; }
-
-        /* Yukarı aşağı inen tarama çizgisi (Van Gogh Sarısı) */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: #ffcc00; 
-            box-shadow: 0 0 10px #ffcc00;
-            animation: scan-anim 2s infinite linear;
-        }
-
-        @keyframes scan-anim {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
+        .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #ffcc00; box-shadow: 0 0 10px #ffcc00; animation: scan-anim 2s infinite linear; }
+        @keyframes scan-anim { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
     </style>
 </head>
 <body>
     
     <div id="version-container">
-        <button id="version-btn">Sürüm: v1.2 ▼</button>
+        <button id="version-btn">Sürüm: v1.4 ▼</button>
         <div id="version-panel">
-            <h4>Yenilikler (Log)</h4>
+            <h4>Yenilikler</h4>
             <ul>
-                <li><strong>v1.2:</strong> Kamera tarama (scanner) animasyonu eklendi.</li>
-                <li><strong>v1.1:</strong> Sürüm geçmişi paneli eklendi. Dosya adı boşluk hatası (van_gogh.mp4) giderildi.</li>
-                <li><strong>v1.0:</strong> Yıldızlı Gece tablosu AR hedefi olarak tanımlandı.</li>
+                <li><strong>v1.4:</strong> Hata ayıklama için kırmızı test çerçevesi eklendi. Video render metodu değiştirildi.</li>
             </ul>
         </div>
     </div>
 
     <div id="ui-layer">
-        <p>Kamerayı Yıldızlı Gece tablosuna tutun.<br><em>(Sesli videoların başlaması için ekrana bir kez dokunun)</em></p>
+        <p id="info-text">Kamerayı Yıldızlı Gece tablosuna tutun.</p>
     </div>
 
     <div id="scanner">
@@ -133,16 +63,18 @@
         <div class="scan-line"></div>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: targets.mind; uiLoading: no; uiScanning: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-assets>
-            <video id="vanGoghVideo" src="van_gogh.mp4" webkit-playsinline playsinline loop crossorigin="anonymous"></video>
+            <video id="vanGoghVideo" src="van_gogh.mp4" webkit-playsinline playsinline loop muted></video>
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity id="target" mindar-image-target="targetIndex: 0">
-            <a-video src="#vanGoghVideo" position="0 0 0" width="1" height="0.75"></a-video>
+            <a-plane color="red" position="0 0 -0.05" width="1.1" height="0.85"></a-plane>
+            
+            <a-plane src="#vanGoghVideo" position="0 0 0" width="1" height="0.75" material="transparent: false;"></a-plane>
         </a-entity>
     </a-scene>
 
@@ -151,37 +83,37 @@
             const target = document.querySelector('#target');
             const video = document.querySelector('#vanGoghVideo');
             const scanner = document.querySelector('#scanner');
+            const infoText = document.querySelector('#info-text');
             
-            // Versiyon Paneli Aç/Kapat İşlemi
             const versionBtn = document.getElementById('version-btn');
             const versionPanel = document.getElementById('version-panel');
 
             versionBtn.addEventListener('click', () => {
-                if (versionPanel.style.display === 'block') {
-                    versionPanel.style.display = 'none';
-                    versionBtn.innerText = "Sürüm: v1.2 ▼";
-                } else {
-                    versionPanel.style.display = 'block';
-                    versionBtn.innerText = "Sürüm: v1.2 ▲";
-                }
+                versionPanel.style.display = versionPanel.style.display === 'block' ? 'none' : 'block';
+                versionBtn.innerText = versionPanel.style.display === 'block' ? "Sürüm: v1.4 ▲" : "Sürüm: v1.4 ▼";
             });
 
-            // Tarayıcı otomatik oynatma engeli aşma
             window.addEventListener('click', () => {
-                video.play();
-                video.pause();
-            }, { once: true });
-
-            // Kamera hedef resmi bulduğunda
-            target.addEventListener("targetFound", () => {
-                scanner.style.display = 'none'; // Tarama animasyonunu gizle
-                video.play();                   // Videoyu başlat
+                if(video.muted) video.muted = false;
             });
 
-            // Kamera hedef resmi kaybettiğinde
+            target.addEventListener("targetFound", () => {
+                scanner.style.display = 'none';
+                infoText.innerText = "Tablo bulundu! Video yükleniyor...";
+                
+                // Videoyu başlat ve hata verirse ekrana yazdır
+                video.play().catch(error => {
+                    console.error("Video oynatılamadı:", error);
+                    infoText.innerText = "HATA: Video oynatılamıyor. Format desteklenmiyor olabilir.";
+                    infoText.style.color = "red";
+                });
+            });
+
             target.addEventListener("targetLost", () => {
-                scanner.style.display = 'block'; // Tarama animasyonunu tekrar göster
-                video.pause();                   // Videoyu durdur
+                scanner.style.display = 'block';
+                infoText.innerText = "Kamerayı Yıldızlı Gece tablosuna tutun.";
+                infoText.style.color = "white";
+                video.pause();
             });
         });
     </script>
