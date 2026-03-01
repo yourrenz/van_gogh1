@@ -3,117 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Van Gogh AR Deneyimi</title>
+    <title>Van Gogh AR</title>
     
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
         body { margin: 0; overflow: hidden; }
         
-        #ui-layer {
+        #bilgi-ekrani {
             position: absolute;
             top: 20px;
             width: 100%;
             text-align: center;
-            z-index: 1000;
             color: white;
+            font-size: 16px;
             font-family: Arial, sans-serif;
-            text-shadow: 2px 2px 4px #000000;
+            z-index: 999;
+            text-shadow: 2px 2px 4px black;
             pointer-events: none;
         }
-
-        #version-container { position: absolute; top: 15px; right: 15px; z-index: 1001; font-family: Arial, sans-serif; }
-        #version-btn { background-color: rgba(0, 0, 0, 0.7); color: #fff; border: 1px solid rgba(255, 255, 255, 0.5); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        #version-panel { display: none; background-color: rgba(255, 255, 255, 0.95); color: #333; margin-top: 8px; padding: 12px; border-radius: 8px; width: 220px; font-size: 12px; }
-        #version-panel h4 { margin: 0 0 8px 0; border-bottom: 1px solid #ccc; padding-bottom: 4px;}
-        #version-panel ul { margin: 0; padding-left: 15px; }
-        
-        #scanner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; z-index: 900; pointer-events: none; }
-        .corner { position: absolute; width: 40px; height: 40px; border-color: rgba(255, 255, 255, 0.8); border-style: solid; }
-        .top-left { top: 0; left: 0; border-width: 4px 0 0 4px; }
-        .top-right { top: 0; right: 0; border-width: 4px 4px 0 0; }
-        .bottom-left { bottom: 0; left: 0; border-width: 0 0 4px 4px; }
-        .bottom-right { bottom: 0; right: 0; border-width: 0 4px 4px 0; }
-        .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #ffcc00; box-shadow: 0 0 10px #ffcc00; animation: scan-anim 2s infinite linear; }
-        @keyframes scan-anim { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
     </style>
 </head>
 <body>
     
-    <div id="version-container">
-        <button id="version-btn">Sürüm: v1.4 ▼</button>
-        <div id="version-panel">
-            <h4>Yenilikler</h4>
-            <ul>
-                <li><strong>v1.4:</strong> Hata ayıklama için kırmızı test çerçevesi eklendi. Video render metodu değiştirildi.</li>
-            </ul>
-        </div>
-    </div>
+    <div id="bilgi-ekrani">Kamerayı Yıldızlı Gece tablosuna tutun.<br>(Ses için ekrana bir kez dokunun)</div>
 
-    <div id="ui-layer">
-        <p id="info-text">Kamerayı Yıldızlı Gece tablosuna tutun.</p>
-    </div>
-
-    <div id="scanner">
-        <div class="corner top-left"></div>
-        <div class="corner top-right"></div>
-        <div class="corner bottom-left"></div>
-        <div class="corner bottom-right"></div>
-        <div class="scan-line"></div>
-    </div>
-
-    <a-scene mindar-image="imageTargetSrc: targets.mind; uiLoading: no; uiScanning: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-assets>
-            <video id="vanGoghVideo" src="van_gogh.mp4" webkit-playsinline playsinline loop muted></video>
+            <video id="vid" src="van_gogh.mp4" webkit-playsinline playsinline loop muted></video>
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity id="target" mindar-image-target="targetIndex: 0">
-            <a-plane color="red" position="0 0 -0.05" width="1.1" height="0.85"></a-plane>
-            
-            <a-plane src="#vanGoghVideo" position="0 0 0" width="1" height="0.75" material="transparent: false;"></a-plane>
+        <a-entity id="hedef" mindar-image-target="targetIndex: 0">
+            <a-video src="#vid" position="0 0 0" width="1" height="0.75"></a-video>
         </a-entity>
+        
     </a-scene>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const target = document.querySelector('#target');
-            const video = document.querySelector('#vanGoghVideo');
-            const scanner = document.querySelector('#scanner');
-            const infoText = document.querySelector('#info-text');
-            
-            const versionBtn = document.getElementById('version-btn');
-            const versionPanel = document.getElementById('version-panel');
+            const hedef = document.querySelector('#hedef');
+            const video = document.querySelector('#vid');
+            const bilgiEkrani = document.querySelector('#bilgi-ekrani');
 
-            versionBtn.addEventListener('click', () => {
-                versionPanel.style.display = versionPanel.style.display === 'block' ? 'none' : 'block';
-                versionBtn.innerText = versionPanel.style.display === 'block' ? "Sürüm: v1.4 ▲" : "Sürüm: v1.4 ▼";
-            });
-
+            // Ekrana tıklandığında videonun sesini aç
             window.addEventListener('click', () => {
-                if(video.muted) video.muted = false;
+                if(video.muted) {
+                    video.muted = false;
+                }
             });
 
-            target.addEventListener("targetFound", () => {
-                scanner.style.display = 'none';
-                infoText.innerText = "Tablo bulundu! Video yükleniyor...";
-                
-                // Videoyu başlat ve hata verirse ekrana yazdır
-                video.play().catch(error => {
-                    console.error("Video oynatılamadı:", error);
-                    infoText.innerText = "HATA: Video oynatılamıyor. Format desteklenmiyor olabilir.";
-                    infoText.style.color = "red";
-                });
+            // Kamera yildizligece.jpeg hedefini (targets.mind üzerinden) bulduğunda
+            hedef.addEventListener("targetFound", () => {
+                bilgiEkrani.style.display = 'none'; // Yazıyı gizle
+                video.play();                       // Videoyu oynat
             });
 
-            target.addEventListener("targetLost", () => {
-                scanner.style.display = 'block';
-                infoText.innerText = "Kamerayı Yıldızlı Gece tablosuna tutun.";
-                infoText.style.color = "white";
-                video.pause();
+            // Kamera hedefi kaybettiğinde
+            hedef.addEventListener("targetLost", () => {
+                bilgiEkrani.style.display = 'block'; // Yazıyı tekrar göster
+                video.pause();                       // Videoyu durdur
             });
         });
     </script>
