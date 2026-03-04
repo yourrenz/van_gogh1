@@ -1,130 +1,128 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Van Gogh AR</title>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Rapunzel AR</title>
     
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; }
-        
-        /* Ekranı tamamen kaplayan Başlangıç Kilidi */
-        #start-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      .mindar-ui-loading { display: none !important; }
+      .mindar-ui-overlay { display: none !important; }
 
-        #start-btn {
-            background-color: #ffcc00;
-            color: #000;
-            border: none;
-            padding: 15px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.5);
-        }
+      /* YER KAPLAMAYAN KOMPAKT GÜNLÜK KUTUSU */
+      #version-box {
+        position: fixed; top: 5px; right: 5px; width: 140px; max-height: 90px;
+        background: rgba(0, 0, 0, 0.5); color: #ccc; padding: 6px;
+        border-radius: 5px; font-size: 9px; z-index: 10000;
+        overflow-y: auto; scrollbar-width: thin;
+      }
+      #version-box strong { color: #ff4081; font-size: 10px; display: block; margin-bottom: 3px; border-bottom: 1px solid #555; padding-bottom: 2px;}
+      #version-box ul { margin: 0; padding: 0 0 0 12px; }
+      #version-box li { margin-bottom: 3px; }
 
-        #debug-log {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 20%;
-            background-color: rgba(0, 0, 0, 0.8); color: #00ff00;
-            font-family: monospace; font-size: 12px; padding: 10px;
-            box-sizing: border-box; overflow-y: auto; z-index: 9000;
-        }
+      /* BAŞLAT EKRANI */
+      #start-screen {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.95); z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        color: white; text-align: center;
+      }
+      #start-button {
+        padding: 15px 40px; font-size: 18px; font-weight: bold;
+        background: #ff4081; color: white; border: none; border-radius: 30px;
+        cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(255, 64, 129, 0.5);
+      }
+
+      /* ORİJİNAL TARAMA REHBERİ */
+      #scanning-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 999;
+        background: url('https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.0/examples/image-tracking/assets/card-example/softmind/overlay.png') no-repeat center center;
+        background-size: 80%; opacity: 0.5;
+      }
     </style>
-</head>
-<body>
-    
-    <div id="start-overlay">
-        <h2>Van Gogh AR Deneyimi</h2>
-        <p>Kameraya izin verin ve tabloyu taratın.</p>
-        <button id="start-btn">DENEYİMİ BAŞLAT</button>
+  </head>
+  <body>
+
+    <div id="version-box">
+      <strong>Tüm Günlükler (v1.1.2)</strong>
+      <ul>
+        <li><strong>v1.1.2:</strong> Geçmiş loglar eklendi (kompakt).</li>
+        <li><strong>v1.1.1:</strong> Video dikey (1.78) yapıldı, temiz sürüme dönüldü.</li>
+        <li><strong>v1.1.0:</strong> Orijinal yatay ve eski tarama çerçevesine dönüldü.</li>
+        <li><strong>v1.0.8-9:</strong> Dikey çerçeve test edildi.</li>
+        <li><strong>v1.0.7:</strong> Debug hata modülü test edildi.</li>
+        <li><strong>v1.0.6:</strong> Tüm dosyalar media klasörüne bağlandı.</li>
+        <li><strong>v1.0.5:</strong> targets.mind isimlendirme hatası çözüldü.</li>
+        <li><strong>v1.0.4:</strong> Klasör yapısı eklendi.</li>
+        <li><strong>v1.0.3:</strong> Dosya yolu düzeltmeleri.</li>
+        <li><strong>v1.0.2:</strong> Yükleme ikonu kaldırıldı, buton eklendi.</li>
+        <li><strong>v1.0.1:</strong> İlk video entegrasyonu.</li>
+      </ul>
     </div>
 
-    <div id="debug-log">
-        [SİSTEM] Başlangıç bekleniyor...<br>
+    <div id="start-screen">
+      <h1>Rapunzel AR</h1>
+      <p>Deneyimi başlatmak için dokunun</p>
+      <button id="start-button">BAŞLAT</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        
-        <a-assets>
-            <video id="vid" src="./van_gogh.mp4" webkit-playsinline playsinline loop crossorigin="anonymous"></video>
-        </a-assets>
+    <div id="scanning-overlay"></div>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-scene 
+      mindar-image="imageTargetSrc: ./media/targets.mind; uiScanning: no; uiLoading: no;" 
+      color-space="sRGB" 
+      renderer="colorManagement: true, physicallyCorrectLights" 
+      vr-mode-ui="enabled: false" 
+      device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <video id="rapunzelVideo" src="./media/video_rapunzel.mp4" preload="auto" loop="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
+      </a-assets>
 
-        <a-entity id="hedef" mindar-image-target="targetIndex: 0">
-            <a-plane src="#vid" position="0 0 0" width="1" height="0.75" material="shader: flat; transparent: false;"></a-plane>
-        </a-entity>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity id="mytarget" mindar-image-target="targetIndex: 0">
+        <a-video 
+          id="ar-video" 
+          src="#rapunzelVideo" 
+          width="1" 
+          height="1.78" 
+          position="0 0 0"
+          rotation="0 0 0">
+        </a-video>
+      </a-entity>
     </a-scene>
 
     <script>
-        const logBox = document.getElementById('debug-log');
-        const video = document.getElementById('vid');
-        const hedef = document.getElementById('hedef');
-        const startBtn = document.getElementById('start-btn');
-        const startOverlay = document.getElementById('start-overlay');
-        const scene = document.querySelector('a-scene');
+      const startScreen = document.getElementById('start-screen');
+      const startButton = document.getElementById('start-button');
+      const scanningOverlay = document.getElementById('scanning-overlay');
+      const video = document.getElementById('rapunzelVideo');
+      const target = document.getElementById('mytarget');
 
-        function logMesaji(mesaj, renk = "#00ff00") {
-            logBox.innerHTML += `<span style="color:${renk};">${mesaj}</span><br>`;
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // Kullanıcı "BAŞLAT" butonuna tıkladığında
-            startBtn.addEventListener('click', () => {
-                logMesaji("[SİSTEM] Butona tıklandı. Kilit açılıyor...");
-                
-                // Tarayıcının video kısıtlamasını kökünden çözmek için videoyu 1 saliseliğine oynatıp durduruyoruz
-                video.muted = false; // Ses kilidini aç
-                video.play().then(() => {
-                    video.pause();
-                    logMesaji("[SİSTEM] Video kilidi başarıyla kırıldı!");
-                }).catch(e => {
-                    logMesaji("[UYARI] Kilit açılırken hata: " + e.message, "orange");
-                });
-
-                // Başlangıç ekranını gizle
-                startOverlay.style.display = 'none';
-
-                // AR Motorunu çalıştır
-                scene.systems["mindar-image-system"].start();
-                logMesaji("[KAMERA] AR motoru başlatıldı. Tablo aranıyor...");
-            });
-
-            // Resim bulunduğunda
-            hedef.addEventListener("targetFound", () => {
-                logMesaji("[KAMERA] Yıldızlı Gece tablosu EŞLEŞTİ!", "#ffff00");
-                video.play().then(() => {
-                    logMesaji("[BAŞARI] Video sahnede oynatılıyor!", "#00ffff");
-                }).catch((error) => {
-                    logMesaji(`[HATA] Video oynatılamadı: ${error.message}`, "red");
-                });
-            });
-
-            // Resim kaybedildiğinde
-            hedef.addEventListener("targetLost", () => {
-                logMesaji("[KAMERA] Tablo kaybedildi, video duraklatıldı.", "orange");
-                video.pause();
-            });
+      startButton.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        scanningOverlay.style.display = 'block';
+        video.play().then(() => {
+          video.pause();
+          video.currentTime = 0;
         });
+      });
+
+      target.addEventListener("targetFound", () => {
+        scanningOverlay.style.display = 'none';
+        video.play();
+      });
+
+      target.addEventListener("targetLost", () => {
+        scanningOverlay.style.display = 'block';
+        video.pause();
+      });
     </script>
-</body>
+  </body>
 </html>
